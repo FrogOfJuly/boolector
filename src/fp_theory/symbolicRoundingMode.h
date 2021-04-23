@@ -12,15 +12,15 @@ namespace fp {
 class symbolicRoundingMode
 {
   BoolectorNode* btor_node;
-  explicit symbolicRoundingMode(BoolectorNode* node);
- public:
-  BoolectorNode* get_node();
-  static symbolicRoundingMode fromBtorNode(BoolectorNode* node);
-  symbolicRoundingMode(unsigned v);
-  symbolicRoundingMode(const symbolicRoundingMode& old);
-  symbolicProp valid() const;
-  symbolicProp operator == (const symbolicRoundingMode& lhs) const;
 
+ public:
+  explicit symbolicRoundingMode (BoolectorNode* node);
+  BoolectorNode* get_node () const;
+  static symbolicRoundingMode fromBtorNode (BoolectorNode* node);
+  explicit symbolicRoundingMode (unsigned v);
+  symbolicRoundingMode (const symbolicRoundingMode& old);
+  symbolicProp valid () const;
+  symbolicProp operator== (const symbolicRoundingMode& lhs) const;
 };
 }  // namespace fp
 #endif  // BOOLECTOR_ROUNDING_MODE_H

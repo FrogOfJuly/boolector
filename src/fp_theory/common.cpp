@@ -3,15 +3,19 @@
 //
 
 #include "common.h"
+#include "stdexcept"
 void
 fp::btor_manager::set (Btor* new_btor)
 {
+  if (inst() != nullptr){
+    throw std::runtime_error("unsetting of boolector instance is required");
+  }
   inst () = new_btor;
 }
 void
 fp::btor_manager::unset ()
 {
-  set (nullptr);
+  inst() = nullptr;
 }
 Btor*
 fp::btor_manager::get ()

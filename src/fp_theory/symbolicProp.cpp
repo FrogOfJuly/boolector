@@ -67,7 +67,7 @@ fp::symbolicProp::symbolicProp (bool b)
   btor_node = b ? boolector_not (btor, zero) : zero;
 }
 BoolectorNode *
-fp::symbolicProp::get_node ()
+fp::symbolicProp::get_node () const
 {
   return btor_node;
 }

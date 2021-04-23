@@ -78,7 +78,7 @@ fp::symbolicRoundingMode::operator== (const fp::symbolicRoundingMode &lhs) const
       boolector_eq (btor, btor_node, lhs.btor_node));
 }
 BoolectorNode *
-fp::symbolicRoundingMode::get_node ()
+fp::symbolicRoundingMode::get_node () const
 {
   return btor_node;
 }
