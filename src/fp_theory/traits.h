@@ -28,27 +28,15 @@ class traits
   typedef symbolicBV<false> ubv;
   typedef symfpu::unpackedFloat<traits> uf;
 
-  static symbolicRoundingMode RNE (void)
-  {
-    return symbolicRoundingMode ((unsigned) FE_TONEAREST);
-  }
+  static symbolicRoundingMode RNE (void) { return symbolicRoundingMode (1); }
 
   // Could be better...
-  static symbolicRoundingMode RNA (void) { return symbolicRoundingMode (23); }
-  static symbolicRoundingMode RTP (void)
-  {
-    return symbolicRoundingMode (FE_UPWARD);
-  }
+  static symbolicRoundingMode RNA (void) { return symbolicRoundingMode (2); }
+  static symbolicRoundingMode RTP (void) { return symbolicRoundingMode (4); }
 
-  static symbolicRoundingMode RTN (void)
-  {
-    return symbolicRoundingMode (FE_DOWNWARD);
-  }
+  static symbolicRoundingMode RTN (void) { return symbolicRoundingMode (8); }
 
-  static symbolicRoundingMode RTZ (void)
-  {
-    return symbolicRoundingMode (FE_TOWARDZERO);
-  }
+  static symbolicRoundingMode RTZ (void) { return symbolicRoundingMode (16); }
   inline static void precondition (const symbolicProp& b)
   {
     boolector_assert (btor_manager::get (), b.btor_node);

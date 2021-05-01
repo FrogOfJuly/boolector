@@ -3,6 +3,7 @@
 //
 #include <boolector.h>
 
+#include "../../deps/easyloggingpp/src/easylogging++.h"
 #include "common.h"
 #include "fp_info.h"
 #include "symbolicProp.h"
@@ -21,6 +22,7 @@ class symbolicBV
  public:
   static symbolicBV<isSigned> zero (bitWidthType bw)
   {
+    LOG (DEBUG) << "creating zero of size " << bw;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt  = boolector_bitvec_sort (btor, bw);
@@ -29,6 +31,7 @@ class symbolicBV
   }
   static symbolicBV<isSigned> one (bitWidthType bw)
   {
+    LOG (DEBUG) << "creating one of size " << bw;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt = boolector_bitvec_sort (btor, bw);
@@ -38,30 +41,33 @@ class symbolicBV
 
   explicit symbolicBV (BoolectorNode* node)
   {
+    LOG (DEBUG) << "constructing SymbolicBV around boolecotr node " << node;
     auto btor = btor_manager::get ();
     assert (btor);
     BoolectorSort srt = boolector_get_sort (btor, node);
     assert (boolector_is_bitvec_sort (btor, srt));
-    btor_node = node;
+    btor_node  = node;
+    auto width = boolector_get_width (btor, btor_node);
+    LOG (DEBUG) << "costructed SymbolicBV with width " << width;
   }
   symbolicBV (const symbolicBV<isSigned>& old)
   {
+    LOG (DEBUG) << "invoking copy constructor of SymbolicBV on node "
+                << old.get_node ();
     auto btor = btor_manager::get ();
     assert (btor);
     btor_node = boolector_copy (btor, old.btor_node);
   }
   explicit symbolicBV (const symbolicProp& prop) : symbolicBV (prop.get_node ())
   {
+    LOG (DEBUG) << "constructing SymbolicBV from proposition around "
+                << prop.get_node ();
   }
-  /*symbolicBV (bitWidthType w, unsigned int v)
-  {
-    auto btor = btor_manager::get ();
-    assert (btor);
-    auto srt  = boolector_bitvec_sort (btor, w);
-    btor_node = boolector_unsigned_int (btor, v, srt);
-  }*/
+
   symbolicBV (bitWidthType w, int v)
   {
+    LOG (DEBUG) << "constructing SymbolicBV from integer " << v
+                << " with bitwidth " << w;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt  = boolector_bitvec_sort (btor, w);
@@ -70,6 +76,9 @@ class symbolicBV
 
   symbolicBV<isSigned> operator& (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing & on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -77,6 +86,9 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator| (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing | on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -84,12 +96,16 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator~ () const
   {
+    LOG (DEBUG) << "doing ~ on SymbolicBV of width " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (boolector_not (btor, btor_node));
   }
   symbolicBV<isSigned> operator+ (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing + on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -97,6 +113,9 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator- (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing - on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -104,6 +123,9 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator* (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing * on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -111,6 +133,9 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator/ (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing / on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -126,6 +151,7 @@ class symbolicBV
   }
   symbolicBV<isSigned> operator- () const
   {
+    LOG (DEBUG) << "doing - on SymbolicBV of width " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (boolector_neg (btor, btor_node));
@@ -133,12 +159,14 @@ class symbolicBV
 
   symbolicBV<isSigned> increment () const
   {
+    LOG (DEBUG) << "doing increment on SymbolicBV of width " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (boolector_inc (btor, btor_node));
   }
   symbolicBV<isSigned> decrement () const
   {
+    LOG (DEBUG) << "doing decrement on SymbolicBV of width " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (boolector_dec (btor, btor_node));
@@ -146,6 +174,9 @@ class symbolicBV
 
   symbolicBV<isSigned> operator<< (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing << on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -154,6 +185,9 @@ class symbolicBV
 
   symbolicBV<isSigned> operator>> (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing >> on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -170,6 +204,9 @@ class symbolicBV
 
   symbolicProp operator<= (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing <= on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -185,6 +222,9 @@ class symbolicBV
   }
   symbolicProp operator>= (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing >= on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -200,6 +240,9 @@ class symbolicBV
   }
   symbolicProp operator% (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing % on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -209,13 +252,16 @@ class symbolicBV
     }
     else
     {
-      //todo: boolector unsigned mod???
+      // todo: boolector unsigned mod???
       return symbolicProp::fromBtorNode (
           boolector_urem (btor, btor_node, right.btor_node));
     }
   }
   symbolicProp operator< (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing < on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -231,6 +277,9 @@ class symbolicBV
   }
   symbolicProp operator== (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing == on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicProp::fromBtorNode (
@@ -238,6 +287,9 @@ class symbolicBV
   }
   symbolicProp operator> (const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing > on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -260,6 +312,7 @@ class symbolicBV
 
   static symbolicBV<isSigned> allOnes (bitWidthType bw)
   {
+    LOG (DEBUG) << "creating allones of size " << bw;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt  = boolector_bitvec_sort (btor, bw);
@@ -268,12 +321,14 @@ class symbolicBV
   }
   symbolicProp isAllOnes () const
   {
+    LOG (DEBUG) << "checking isAllOnes of size " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return *this == symbolicBV::allOnes (boolector_get_width (btor, btor_node));
   }
   symbolicProp isAllZeros () const
   {
+    LOG (DEBUG) << "checking isAllZeros of size " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return *this == symbolicBV::zero (boolector_get_width (btor, btor_node));
@@ -281,6 +336,7 @@ class symbolicBV
 
   symbolicBV<isSigned> maxValue () const
   {
+    LOG (DEBUG) << "getting maxValue of size " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     auto w = boolector_get_width (btor, btor_node);
@@ -288,6 +344,7 @@ class symbolicBV
   }
   symbolicBV<isSigned> minValue () const
   {
+    LOG (DEBUG) << "getting minValue of size " << getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return minValue (boolector_get_width (btor, btor_node));
@@ -295,6 +352,7 @@ class symbolicBV
 
   static symbolicBV<isSigned> maxValue (bitWidthType w)
   {
+    LOG (DEBUG) << "getting maxValue of size " << w;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt = boolector_bitvec_sort (btor, w);
@@ -310,6 +368,7 @@ class symbolicBV
 
   static symbolicBV<isSigned> minValue (bitWidthType w)
   {
+    LOG (DEBUG) << "getting minValue of size " << w;
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt = boolector_bitvec_sort (btor, w);
@@ -331,6 +390,8 @@ class symbolicBV
   }
   symbolicBV<isSigned> append (const symbolicBV<isSigned> right) const
   {
+    LOG (DEBUG) << "appending from to " << getWidth () << " with size "
+                << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -338,6 +399,8 @@ class symbolicBV
   }
   symbolicBV<isSigned> extend (bitWidthType newSize) const
   {
+    LOG (DEBUG) << "extending from size" << getWidth () << " to size "
+                << newSize;
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
@@ -351,6 +414,8 @@ class symbolicBV
   }
   symbolicBV<isSigned> resize (fp::bitWidthType newSize) const
   {
+    LOG (DEBUG) << "resizing from size" << getWidth () << " to size "
+                << newSize;
     auto width = this->getWidth ();
 
     if (newSize > width)
@@ -368,9 +433,11 @@ class symbolicBV
   }
   symbolicBV<isSigned> contract (fp::bitWidthType newSize) const
   {
+    LOG (DEBUG) << "contructing from size" << getWidth ()  << " to size "
+                << newSize;
     auto btor = btor_manager::get ();
     assert (btor);
-    return symbolicBV<isSigned> (boolector_slice (btor, btor_node, 0, newSize));
+    return symbolicBV<isSigned> (boolector_slice (btor, btor_node, newSize, 0));
   }
 
   symbolicBV<isSigned> modularLeftShift (const symbolicBV<isSigned>& op) const
@@ -386,9 +453,14 @@ class symbolicBV
   symbolicBV<isSigned> modularNegate () const { return -(*this); }
   symbolicBV<isSigned> modularAdd (const symbolicBV<isSigned>& right)
   {
+    LOG (DEBUG) << "doing modularAdd on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
-    if constexpr (isSigned)
+    return symbolicBV<isSigned> (
+        boolector_add (btor, btor_node, right.btor_node));
+    /*if constexpr (isSigned)
     {
       return symbolicBV<isSigned> (
           boolector_saddo (btor, btor_node, right.btor_node));
@@ -397,25 +469,34 @@ class symbolicBV
     {
       return symbolicBV<isSigned> (
           boolector_uaddo (btor, btor_node, right.btor_node));
-    }
+    }*/
   }
 
   symbolicBV<isSigned> matchWidth (const symbolicBV<isSigned>& op) const
   {
+    LOG (DEBUG) << "doing matchWidth on SymbolicBV of width " << getWidth ()
+                << " and on "
+                << "another SymbolicBV of width " << op.getWidth ();
     assert (this->getWidth () <= op.getWidth ());
     return this->extend (op.getWidth () - this->getWidth ());
   }
   symbolicBV<isSigned> extract (bitWidthType upper, bitWidthType lower) const
   {
+    LOG (DEBUG) << "extracting from SymbolicBV of width " << getWidth ()
+                << " since " << upper << " until " << lower;
     auto btor = btor_manager::get ();
     assert (btor);
-    return symbolicBV<isSigned> (
-        boolector_slice (btor, btor_node, upper, lower));
+    auto res =
+        symbolicBV<isSigned> (boolector_slice (btor, btor_node, upper, lower));
+    LOG (DEBUG) << "resulting symbolicBV around " << res.get_node ();
+    return res;
   }
 
   symbolicBV<isSigned> signExtendRightShift (
       const symbolicBV<isSigned>& right) const
   {
+    LOG (DEBUG) << "doing signExtendRightShift of SymbolicBV of width "
+                << getWidth () << "and width " << right.getWidth ();
     auto btor = btor_manager::get ();
     assert (btor);
     return symbolicBV<isSigned> (
@@ -432,190 +513,7 @@ class symbolicBV
   }
 
   BoolectorNode* get_node () const { return btor_node; }
-
-  /*//  static symbolicBV allOnes(bitWidthType bw);
-  //
-  //  symbolicBV(const symbolicBV<isSigned>& old);
-  //
-  //  symbolicBV (symbolicBV&& rhs) noexcept;
-  //
-  //  symbolicBV operator& (const symbolicBV<isSigned>& right) const;
-  //  symbolicBV operator| (const symbolicBV& right) const;
-  //  symbolicBV operator~ () const;
-  //
-  //  symbolicBV operator+ (const symbolicBV<isSigned>& right) const;
-  //  symbolicBV operator- (const symbolicBV<isSigned>& right) const;
-  //  symbolicBV operator- () const;
-  //  //  symbolicBV operator/ (const symbolicBV& right) const = 0;
-  //  symbolicBV operator* (const symbolicBV<isSigned>& right) const;
-  //  //  symbolicBV operator% (const symbolicBV& right) const = 0;
-  //
-  //  //  symbolicProp operator<= (const symbolicBV& right) const = 0;
-  //  //  symbolicProp operator>= (const symbolicBV& right) const = 0;
-  //  symbolicBV operator== (const symbolicBV<isSigned>& right) const;
-  //  //  symbolicProp operator< (const symbolicBV& right) const = 0;
-  //  //  symbolicProp operator> (const symbolicBV& right) const = 0;
-  //
-  //  symbolicBV increment () const;
-  //  symbolicBV decrement () const;
-  //
-  //  symbolicBV operator<< (const symbolicBV& right) const;
-  //  //  symbolicBV operator>> (const symbolicBV& right) const = 0;
-  //
-  //  symbolicBV<false> toUnsigned () const;
-  //  symbolicBV<true> toSigned () const;*/
 };
-/*
-class symbolicBV
-{
- protected:
-  BoolectorNode* btor_node;
-
-  bitWidthType get_weidth () const;
-
-  explicit symbolicBV (BoolectorNode* node);
-  static symbolicBV fromBtorNode (BoolectorNode* node);
-  static symbolicBV zero (bitWidthType bw);
-  static symbolicBV one (bitWidthType bw);
-  static symbolicBV allOnes (bitWidthType bw);
-
-  symbolicBV (const symbolicBV& old);
-
- public:
-  BoolectorNode* get_node () const;
-
-  symbolicBV (symbolicBV&& rhs) noexcept;
-
-  symbolicBV operator& (const symbolicBV& right) const;
-  symbolicBV operator| (const symbolicBV& right) const;
-  symbolicBV operator~ () const;
-
-  symbolicBV operator+ (const symbolicBV& right) const;
-  symbolicBV operator- (const symbolicBV& right) const;
-  symbolicBV operator- () const;
-  //  symbolicBV operator/ (const symbolicBV& right) const = 0;
-  symbolicBV operator* (const symbolicBV& right) const;
-  //  symbolicBV operator% (const symbolicBV& right) const = 0;
-
-  //  symbolicProp operator<= (const symbolicBV& right) const = 0;
-  //  symbolicProp operator>= (const symbolicBV& right) const = 0;
-  symbolicProp operator== (const symbolicBV& right) const;
-  //  symbolicProp operator< (const symbolicBV& right) const = 0;
-  //  symbolicProp operator> (const symbolicBV& right) const = 0;
-
-  symbolicBV increment () const;
-  symbolicBV decrement () const;
-
-  symbolicBV operator<< (const symbolicBV& right) const;
-  //  symbolicBV operator>> (const symbolicBV& right) const = 0;
-
-  uSymbolicBV toUnsigned () const;
-  sSymbolicBV toSigned () const;
-
-  operator uSymbolicBV () const;
-  operator sSymbolicBV () const;
-
-  //  symbolicBV maxValue () const = 0;
-  //  symbolicBV minValue () const = 0;
-
-  symbolicProp isAllOnes () const;
-  symbolicProp isAllZeros () const;
-
-  symbolicBV append (const symbolicBV& rigth) const;
-
-  //  symbolicBV extend (const symbolicBV& right) const = 0;
-
-  symbolicBV modularLeftShift (const symbolicBV& op) const;
-
-  symbolicBV modularIncrement () const;
-  symbolicBV modularDecrement () const;
-
-  symbolicBV modularNegate () const;
-
-  symbolicBV extract (bitWidthType upper, bitWidthType lower) const;
-};
-
-class uSymbolicBV : public symbolicBV
-{
-  explicit uSymbolicBV (BoolectorNode* node);
-
- public:
-  using symbolicBV::zero, symbolicBV::allOnes, symbolicBV::one;
-  uSymbolicBV (uSymbolicBV&& rhs) noexcept;
-
-  uSymbolicBV (const uSymbolicBV& right);
-
-  static uSymbolicBV fromBtorNode (BoolectorNode* node);
-
-  symbolicProp operator<= (const uSymbolicBV& right) const;
-  symbolicProp operator>= (const uSymbolicBV& right) const;
-
-  symbolicProp operator< (const uSymbolicBV& right) const;
-  symbolicProp operator> (const uSymbolicBV& right) const;
-
-  uSymbolicBV operator>> (const uSymbolicBV& right) const;
-
-  uSymbolicBV operator/ (const uSymbolicBV& right) const;
-  uSymbolicBV operator% (const uSymbolicBV& right) const;
-
-  uSymbolicBV maxValue () const;
-  uSymbolicBV minValue () const;
-
-  uSymbolicBV extend (bitWidthType w) const;
-
-  uSymbolicBV resize (bitWidthType newSize) const;
-
-  uSymbolicBV contract (bitWidthType newSize) const;
-
-  uSymbolicBV modularRightShift (const uSymbolicBV& op) const;
-
-  uSymbolicBV modularAdd (const uSymbolicBV& op) const;
-
-  uSymbolicBV matchWidth (const uSymbolicBV& op) const;
-
-  friend sSymbolicBV;
-  friend symbolicBV;
-};
-
-class sSymbolicBV : public symbolicBV
-{
-  explicit sSymbolicBV (BoolectorNode* node);
-
- public:
-  using symbolicBV::zero, symbolicBV::allOnes, symbolicBV::one;
-  sSymbolicBV (sSymbolicBV&& rhs) noexcept;
-
-  sSymbolicBV (const sSymbolicBV& right);
-  static sSymbolicBV fromBtorNode (BoolectorNode* node);
-
-  symbolicProp operator<= (const sSymbolicBV& right) const;
-  symbolicProp operator>= (const sSymbolicBV& right) const;
-
-  symbolicProp operator< (const sSymbolicBV& right) const;
-  symbolicProp operator> (const sSymbolicBV& right) const;
-
-  sSymbolicBV operator>> (const sSymbolicBV& right) const;
-
-  sSymbolicBV operator/ (const sSymbolicBV& right) const;
-  sSymbolicBV operator% (const sSymbolicBV& right) const;
-
-  sSymbolicBV maxValue () const;
-  sSymbolicBV minValue () const;
-
-  sSymbolicBV extend (bitWidthType w) const;
-
-  sSymbolicBV resize (bitWidthType newSize) const;
-
-  sSymbolicBV contract (bitWidthType newSize) const;
-
-  sSymbolicBV modularRightShift (const sSymbolicBV& op) const;
-  sSymbolicBV modularAdd (const sSymbolicBV& op) const;
-
-  sSymbolicBV matchWidth (const sSymbolicBV& op) const;
-
-  friend uSymbolicBV;
-  friend symbolicBV;
-};*/
 }  // namespace fp
 #undef constexpr
 #endif  // BOOLECTOR_SYMBOLICBV_H

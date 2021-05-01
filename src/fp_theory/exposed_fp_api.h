@@ -15,7 +15,7 @@ BoolectorNode* boolector_fp_var (Btor* btor,
 
 BoolectorNode* boolector_fp_add (Btor* btor,
                                  const typename fp::traits::fpt& fp_info,
-                                 const typename fp::traits::rm& rm,
+                                 BoolectorNode* rm,
                                  BoolectorNode* left,
                                  BoolectorNode* right);
 
@@ -31,19 +31,19 @@ BoolectorNode* boolector_fp_consth (Btor* btor,
 
 BoolectorNode* boolector_fp_sub (Btor* btor,
                                  const typename fp::traits::fpt& fp_info,
-                                 const typename fp::traits::rm& rm,
+                                 BoolectorNode* rm,
                                  BoolectorNode* left,
                                  BoolectorNode* right);
 
 BoolectorNode* boolector_fp_mult (Btor* btor,
                                   const typename fp::traits::fpt& fp_info,
-                                  const typename fp::traits::rm& rm,
+                                  BoolectorNode* rm,
                                   BoolectorNode* left,
                                   BoolectorNode* right);
 
 BoolectorNode* boolector_fp_div (Btor* btor,
                                  const typename fp::traits::fpt& fp_info,
-                                 const typename fp::traits::rm& rm,
+                                 BoolectorNode* rm,
                                  BoolectorNode* left,
                                  BoolectorNode* right);
 
@@ -74,6 +74,13 @@ BoolectorNode* boolector_fp_eq (Btor* btor,
                                 const typename fp::traits::fpt& fp_info,
                                 BoolectorNode* left,
                                 BoolectorNode* right);
+
+BoolectorNode* boolector_get_fne_rounding_mod (Btor* btor);
+BoolectorNode* boolector_get_rtp_rounding_mod (Btor* btor);
+BoolectorNode* boolector_get_rtn_rounding_mod (Btor* btor);
+BoolectorNode* boolector_get_rna_rounding_mod (Btor* btor);
+BoolectorNode* boolector_get_rtz_rounding_mod (Btor* btor);
+
 }  // namespace fp
 /*--some floating point logic--*/
 

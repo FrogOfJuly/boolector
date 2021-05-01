@@ -15,6 +15,10 @@
 #include "../deps/symfpu/core/sign.h"
 #include "../deps/symfpu/core/sqrt.h"
 #include "../deps/symfpu/core/unpackedFloat.h"
+
+#include "../../../deps/easyloggingpp/src/easylogging++.h"
+
+#include "boolector.h"
 #include "fp_ite.h"
 #include "traits.h"
 
@@ -81,7 +85,7 @@ boolector_fp_consth (Btor* btor,
 BoolectorNode*
 boolector_fp_add (Btor* btor,
                   const typename fp::traits::fpt& fp_info,
-                  const typename fp::traits::rm& rm,
+                  BoolectorNode* rm,
                   BoolectorNode* left,
                   BoolectorNode* right)
 {
@@ -93,7 +97,7 @@ boolector_fp_add (Btor* btor,
   auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
 
   auto added (symfpu::add<fp::traits> (
-      fp_info, rm, unpacked1, unpacked2, fp::symbolicProp (true)));
+      fp_info, traits::rm(rm), unpacked1, unpacked2, fp::symbolicProp (true)));
   auto repacked (symfpu::pack<fp::traits> (fp_info, added));
   fp::btor_manager::unset ();
   return repacked.get_node ();
@@ -102,7 +106,7 @@ boolector_fp_add (Btor* btor,
 BoolectorNode*
 boolector_fp_sub (Btor* btor,
                   const typename fp::traits::fpt& fp_info,
-                  const typename fp::traits::rm& rm,
+                  BoolectorNode* rm,
                   BoolectorNode* left,
                   BoolectorNode* right)
 {
@@ -114,7 +118,7 @@ boolector_fp_sub (Btor* btor,
   auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
   auto negated2 (symfpu::negate (fp_info, unpacked2));
   auto subbed (symfpu::add<fp::traits> (
-      fp_info, rm, unpacked1, negated2, fp::symbolicProp (true)));
+      fp_info, traits::rm(rm), unpacked1, negated2, fp::symbolicProp (true)));
   auto repacked (symfpu::pack<fp::traits> (fp_info, subbed));
   fp::btor_manager::unset ();
   return repacked.get_node ();
@@ -123,7 +127,7 @@ boolector_fp_sub (Btor* btor,
 BoolectorNode*
 boolector_fp_mult (Btor* btor,
                    const typename fp::traits::fpt& fp_info,
-                   const typename fp::traits::rm& rm,
+                   BoolectorNode* rm,
                    BoolectorNode* left,
                    BoolectorNode* right)
 {
@@ -134,7 +138,7 @@ boolector_fp_mult (Btor* btor,
   auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
   auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
   auto multed (
-      symfpu::multiply<fp::traits> (fp_info, rm, unpacked1, unpacked2));
+      symfpu::multiply<fp::traits> (fp_info, traits::rm(rm), unpacked1, unpacked2));
   auto repacked (symfpu::pack<fp::traits> (fp_info, multed));
   fp::btor_manager::unset ();
   return repacked.get_node ();
@@ -143,7 +147,7 @@ boolector_fp_mult (Btor* btor,
 BoolectorNode*
 boolector_fp_div (Btor* btor,
                   const typename fp::traits::fpt& fp_info,
-                  const typename fp::traits::rm& rm,
+                  BoolectorNode* rm,
                   BoolectorNode* left,
                   BoolectorNode* right)
 {
@@ -153,7 +157,7 @@ boolector_fp_div (Btor* btor,
 
   auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
   auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
-  auto divided (symfpu::divide<fp::traits> (fp_info, rm, unpacked1, unpacked2));
+  auto divided (symfpu::divide<fp::traits> (fp_info, traits::rm(rm), unpacked1, unpacked2));
   auto repacked (symfpu::pack<fp::traits> (fp_info, divided));
   fp::btor_manager::unset ();
   return repacked.get_node ();
@@ -189,6 +193,124 @@ boolector_fp_eq (Btor* btor,
   auto res = symfpu::ieee754Equal (fp_info, unpacked1, unpacked2);
   fp::btor_manager::unset ();
   return res.get_node ();
+}
+
+BoolectorNode*
+boolector_fp_lt (Btor* btor,
+                 const traits::fpt& fp_info,
+                 BoolectorNode* left,
+                 BoolectorNode* right)
+{
+  fp::btor_manager::set (btor);
+  auto left_bv  = fp::traits::ubv (left);
+  auto right_bv = fp::traits::ubv (right);
+
+  auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
+  auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
+  auto res = symfpu::lessThan (fp_info, unpacked1, unpacked2);
+  fp::btor_manager::unset ();
+  return res.get_node ();
+}
+
+BoolectorNode*
+boolector_fp_lte (Btor* btor,
+                  const traits::fpt& fp_info,
+                  BoolectorNode* left,
+                  BoolectorNode* right)
+{
+  fp::btor_manager::set (btor);
+  auto left_bv  = fp::traits::ubv (left);
+  auto right_bv = fp::traits::ubv (right);
+
+  auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
+  auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
+  auto res = symfpu::lessThanOrEqual (fp_info, unpacked1, unpacked2);
+  fp::btor_manager::unset ();
+  return res.get_node ();
+}
+BoolectorNode*
+boolector_fp_gte (Btor* btor,
+                  const traits::fpt& fp_info,
+                  BoolectorNode* left,
+                  BoolectorNode* right)
+{
+  fp::btor_manager::set (btor);
+  auto left_bv  = fp::traits::ubv (left);
+  auto right_bv = fp::traits::ubv (right);
+
+  auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
+  auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
+  auto res     = symfpu::lessThan (fp_info, unpacked1, unpacked2);
+  auto not_res = boolector_not (btor, res.get_node ());
+  fp::btor_manager::unset ();
+  return not_res;
+}
+BoolectorNode*
+boolector_fp_gt (Btor* btor,
+                 const traits::fpt& fp_info,
+                 BoolectorNode* left,
+                 BoolectorNode* right)
+{
+  fp::btor_manager::set (btor);
+  auto left_bv  = fp::traits::ubv (left);
+  auto right_bv = fp::traits::ubv (right);
+
+  auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
+  auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
+  auto res     = symfpu::lessThanOrEqual (fp_info, unpacked1, unpacked2);
+  auto not_res = boolector_not (btor, res.get_node ());
+  fp::btor_manager::unset ();
+  return not_res;
+}
+
+BoolectorNode*
+boolector_get_fne_rounding_mod (Btor* btor)
+{
+  fp::btor_manager::set (btor);
+  auto rne = fp::traits::RNE ();
+  fp::btor_manager::unset ();
+
+  return rne.get_node ();
+}
+
+BoolectorNode*
+boolector_get_rna_rounding_mod (Btor* btor)
+{
+  fp::btor_manager::set (btor);
+  auto rne = fp::traits::RNA ();
+  fp::btor_manager::unset ();
+
+  return rne.get_node ();
+}
+
+BoolectorNode*
+boolector_get_rtp_rounding_mod (Btor* btor)
+{
+  fp::btor_manager::set (btor);
+  auto rne = fp::traits::RTP ();
+  fp::btor_manager::unset ();
+
+  return rne.get_node ();
+}
+
+BoolectorNode*
+boolector_get_rtn_rounding_mod (Btor* btor)
+{
+  fp::btor_manager::set (btor);
+  auto rne = fp::traits::RTN ();
+  fp::btor_manager::unset ();
+
+  return rne.get_node ();
+}
+
+BoolectorNode*
+boolector_get_rtz_rounding_mod (Btor* btor)
+{
+  fp::btor_manager::set (btor);
+  auto rne = fp::traits::RTZ ();
+  fp::btor_manager::unset ();
+
+  return rne.get_node ();
 }
 }  // namespace fp
    /*--some floating point logic--*/
