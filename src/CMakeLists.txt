@@ -92,6 +92,9 @@ set(libboolector_src_files
         fp_theory/exposed_fp_api.cpp
         fp_theory/exposed_fp_api.h
         fp_theory/fp_ite.h
+
+        ../deps/easyloggingpp/src/easylogging++.cc
+        ../deps/easyloggingpp/src/easylogging++.h
         )
 
 set(boolector_src_files
