@@ -70,10 +70,15 @@ BoolectorNode* boolector_fp_lte (Btor* btor,
                                  BoolectorNode* left,
                                  BoolectorNode* right);
 
-BoolectorNode* boolector_fp_eq (Btor* btor,
+BoolectorNode* boolector_fp_eq_ieee754 (Btor* btor,
                                 const typename fp::traits::fpt& fp_info,
                                 BoolectorNode* left,
                                 BoolectorNode* right);
+
+BoolectorNode* boolector_fp_eq_smtlib (Btor* btor,
+                         const traits::fpt& fp_info,
+                         BoolectorNode* left,
+                         BoolectorNode* right);
 
 BoolectorNode* boolector_get_fne_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtp_rounding_mod (Btor* btor);

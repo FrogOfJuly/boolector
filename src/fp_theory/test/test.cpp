@@ -35,24 +35,24 @@ cmp_test ()
   auto zero = fp::boolector_fp_const (btor, zero_str.c_str ());
 
   auto fp_symb1 = fp::boolector_fp_var (btor, fmt, "x");
-  auto fp_symb2 = fp::boolector_fp_var (btor, fmt, "y");
+//  auto fp_symb2 = fp::boolector_fp_var (btor, fmt, "y");
 
-  auto lt1 = fp::boolector_fp_lt (btor, fmt, fp_symb1, zero);
-  auto lt2 = fp::boolector_fp_lt (btor, fmt, fp_symb2, zero);
+  auto eq = fp::boolector_fp_eq_ieee754 (btor, fmt, fp_symb1, zero);
+//  auto lt2 = fp::boolector_fp_lt (btor, fmt, fp_symb2, zero);
 
-  boolector_assert (btor, lt1);
-  boolector_assert (btor, lt2);
-  std::cout << "passed 2 asserting" << std::endl;
-  auto rm     = fp::boolector_get_fne_rounding_mod (btor);
-  std::cout << "got rounding mod" << std::endl;
-  auto fp_sum = fp::boolector_fp_add (btor, fmt, rm, fp_symb1, fp_symb2);
-  std::cout << "passed add" << std::endl;
-  auto cond   = fp::boolector_fp_lt (btor, fmt, fp_sum, zero);
-  std::cout << "passed 3d assert" << std::endl;
-  boolector_assert (btor, cond);
+  boolector_assert (btor, eq);
+//  boolector_assert (btor, lt2);
+//  std::cout << "passed 2 asserting" << std::endl;
+//  auto rm     = fp::boolector_get_fne_rounding_mod (btor);
+//  std::cout << "got rounding mod" << std::endl;
+//  auto fp_sum = fp::boolector_fp_add (btor, fmt, rm, fp_symb1, fp_symb2);
+//  std::cout << "passed add" << std::endl;
+//  auto cond   = fp::boolector_fp_lt (btor, fmt, fp_sum, zero);
+//  std::cout << "passed 3d assert" << std::endl;
+//  boolector_assert (btor, cond);
 
   auto result = boolector_sat (btor);
-  printf ("Expect: unsat\n");
+  printf ("Expect: sat\n");
   printf ("Boolector: %s\n",
           result == BOOLECTOR_SAT
               ? "sat"
@@ -73,13 +73,13 @@ eq_test ()
   auto fp_symb1 = fp::boolector_fp_var (btor, fmt, "x");
   auto fp_symb2 = fp::boolector_fp_var (btor, fmt, "y");
 
-  auto cond = fp::boolector_fp_eq (btor, fmt, fp_symb1, fp_symb2);
+  auto cond = fp::boolector_fp_eq_smtlib (btor, fmt, fp_symb1, fp_symb2);
 
   boolector_assert (btor, cond);
 
   auto result = boolector_sat (btor);
 
-  printf ("Expect: unsat\n");
+  printf ("Expect: sat\n");
   printf ("Boolector: %s\n",
           result == BOOLECTOR_SAT
               ? "sat"

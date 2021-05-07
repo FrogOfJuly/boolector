@@ -179,7 +179,7 @@ boolector_fp_negate (Btor* btor,
 }
 
 BoolectorNode*
-boolector_fp_eq (Btor* btor,
+boolector_fp_eq_ieee754 (Btor* btor,
                  const traits::fpt& fp_info,
                  BoolectorNode* left,
                  BoolectorNode* right)
@@ -311,6 +311,22 @@ boolector_get_rtz_rounding_mod (Btor* btor)
   fp::btor_manager::unset ();
 
   return rne.get_node ();
+}
+BoolectorNode*
+boolector_fp_eq_smtlib (Btor* btor,
+                 const traits::fpt& fp_info,
+                 BoolectorNode* left,
+                 BoolectorNode* right)
+{
+  fp::btor_manager::set (btor);
+  auto left_bv  = fp::traits::ubv (left);
+  auto right_bv = fp::traits::ubv (right);
+
+  auto unpacked1 (symfpu::unpack<fp::traits> (fp_info, left_bv));
+  auto unpacked2 (symfpu::unpack<fp::traits> (fp_info, right_bv));
+  auto res = symfpu::smtlibEqual (fp_info, unpacked1, unpacked2);
+  fp::btor_manager::unset ();
+  return res.get_node ();
 }
 }  // namespace fp
    /*--some floating point logic--*/
