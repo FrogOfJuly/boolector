@@ -112,7 +112,7 @@ target_include_directories(boolector
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include>)
 
-target_include_directories(boolector PRIVATE ${Btor2Tools_INCLUDE_DIR})
+target_include_directories(boolector PRIVATE ${Btor2Tools_INCLUDE_DIR} ${DEPS_INCLUDE_DIR})
 target_link_libraries(boolector ${Btor2Tools_LIBRARIES})
 
 if (GMP_FOUND)
@@ -178,7 +178,7 @@ set(btormc_src_files
         )
 add_executable(btormc ${btormc_src_files})
 target_link_libraries(btormc boolector ${Btor2Tools_LIBRARIES})
-target_include_directories(btormc PRIVATE ${Btor2Tools_INCLUDE_DIR})
+target_include_directories(btormc PRIVATE ${Btor2Tools_INCLUDE_DIR} ${DEPS_INCLUDE_DIR})
 install(TARGETS btormc DESTINATION bin)
 
 #-----------------------------------------------------------------------------#
