@@ -16,9 +16,9 @@ main (int argc, char* argv[])
   eq_test ();
   std::cout << "----------" << std::endl;
 
-  std::cout << "cmp test:" << std::endl;
-  cmp_test ();
-  std::cout << "----------" << std::endl;
+//  std::cout << "cmp test:" << std::endl;
+//  cmp_test ();
+//  std::cout << "----------" << std::endl;
   return 0;
 }
 
@@ -29,6 +29,7 @@ cmp_test ()
   fp::traits::bwt s = 24;
   auto fmt          = fp::traits::fpt (e, s);
   Btor* btor        = boolector_new ();
+  boolector_set_trapi(btor, stdout);
 
   auto zero_str = std::string (e + s, '0');
 
@@ -69,6 +70,7 @@ eq_test ()
   fp::traits::bwt s = 24;
   auto fmt          = fp::traits::fpt (e, s);
   Btor* btor        = boolector_new ();
+  boolector_set_trapi(btor, stdout);
 
   auto fp_symb1 = fp::boolector_fp_var (btor, fmt, "x");
   auto fp_symb2 = fp::boolector_fp_var (btor, fmt, "y");
