@@ -132,5 +132,53 @@ fp::test_cases::run () const
 {
   cmp_to_zero ();
   cmp_two_symb_vars ();
+  right_zero_neutrality ();
+  left_zero_neutrality ();
   addition_commutation_with_zero ();
+  addition_commutation ();
+}
+void
+fp::test_cases::right_zero_neutrality () const
+{
+  LOG (INFO) << "running x + 0 == x test";
+  set_boolector ();
+//  boolector_set_trapi (btor, stdout);
+
+  auto x    = fp::boolector_fp_var (btor, fmt, "x");
+  auto zero = fp::boolector_fp_zero (btor, fmt);
+  auto xz   = fp::boolector_fp_add (btor, fmt, rmode, x, zero);
+  auto cond = fp::boolector_fp_eq_smtlib (btor, fmt, xz, x);
+
+  boolector_assert (btor, cond);
+  auto result = boolector_sat (btor);
+
+  LOG (INFO) << "Expect: sat";
+  result == BOOLECTOR_SAT
+      ? LOG (INFO) << "SAT"
+      : LOG (WARNING) << "expected sat, got: "
+                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+  release_boolector ();
+}
+
+void
+fp::test_cases::left_zero_neutrality () const
+{
+  LOG (INFO) << "running 0 + x == x test";
+  set_boolector ();
+//  boolector_set_trapi (btor, stdout);
+
+  auto x    = fp::boolector_fp_var (btor, fmt, "x");
+  auto zero = fp::boolector_fp_zero (btor, fmt);
+  auto zx   = fp::boolector_fp_add (btor, fmt, rmode, zero, x);
+  auto cond = fp::boolector_fp_eq_smtlib (btor, fmt, zx, x);
+
+  boolector_assert (btor, cond);
+  auto result = boolector_sat (btor);
+
+  LOG (INFO) << "Expect: sat";
+  result == BOOLECTOR_SAT
+      ? LOG (INFO) << "SAT"
+      : LOG (WARNING) << "expected sat, got: "
+                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+  release_boolector ();
 }

@@ -15,7 +15,7 @@ main (int argc, char* argv[])
   c.setToDefault ();
 
   el::Loggers::addFlag (el::LoggingFlag::HierarchicalLogging);
-  el::Loggers::setLoggingLevel (el::Level::Debug);
+  el::Loggers::setLoggingLevel (el::Level::Warning);
 
   c.setGlobally (el::ConfigurationType::Format, "--------- | %level | %msg");
   c.setGlobally (el::ConfigurationType::ToFile, "false");

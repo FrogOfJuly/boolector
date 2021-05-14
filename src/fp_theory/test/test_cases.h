@@ -38,6 +38,8 @@ class test_cases
   void cmp_two_symb_vars () const;
   void addition_commutation_with_zero () const;
   void addition_commutation () const;
+  void right_zero_neutrality () const;
+  void left_zero_neutrality () const;
 
  public:
   explicit test_cases (const fp::traits::fpt& fmt,
