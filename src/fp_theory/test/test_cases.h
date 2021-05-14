@@ -37,6 +37,7 @@ class test_cases
   void cmp_to_zero () const;
   void cmp_two_symb_vars () const;
   void addition_commutation_with_zero () const;
+  void adding_zeroes() const;
   void addition_commutation () const;
   void right_zero_neutrality () const;
   void left_zero_neutrality () const;

@@ -132,6 +132,7 @@ fp::test_cases::run () const
 {
   cmp_to_zero ();
   cmp_two_symb_vars ();
+  adding_zeroes();
   right_zero_neutrality ();
   left_zero_neutrality ();
   addition_commutation_with_zero ();
@@ -142,7 +143,7 @@ fp::test_cases::right_zero_neutrality () const
 {
   LOG (INFO) << "running x + 0 == x test";
   set_boolector ();
-//  boolector_set_trapi (btor, stdout);
+  //  boolector_set_trapi (btor, stdout);
 
   auto x    = fp::boolector_fp_var (btor, fmt, "x");
   auto zero = fp::boolector_fp_zero (btor, fmt);
@@ -165,12 +166,32 @@ fp::test_cases::left_zero_neutrality () const
 {
   LOG (INFO) << "running 0 + x == x test";
   set_boolector ();
-//  boolector_set_trapi (btor, stdout);
+  //  boolector_set_trapi (btor, stdout);
 
   auto x    = fp::boolector_fp_var (btor, fmt, "x");
   auto zero = fp::boolector_fp_zero (btor, fmt);
   auto zx   = fp::boolector_fp_add (btor, fmt, rmode, zero, x);
   auto cond = fp::boolector_fp_eq_smtlib (btor, fmt, zx, x);
+
+  boolector_assert (btor, cond);
+  auto result = boolector_sat (btor);
+
+  LOG (INFO) << "Expect: sat";
+  result == BOOLECTOR_SAT
+      ? LOG (INFO) << "SAT"
+      : LOG (WARNING) << "expected sat, got: "
+                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+  release_boolector ();
+}
+void
+fp::test_cases::adding_zeroes () const
+{
+  LOG (INFO) << "running 0 + 0 == 0 test";
+  set_boolector ();
+  auto zero1 = fp::boolector_fp_zero (btor, fmt);
+  auto zero2 = fp::boolector_fp_zero (btor, fmt);
+  auto zz    = fp::boolector_fp_add (btor, fmt, rmode, zero1, zero2);
+  auto cond  = fp::boolector_fp_eq_smtlib (btor, fmt, zz, zero1);
 
   boolector_assert (btor, cond);
   auto result = boolector_sat (btor);
