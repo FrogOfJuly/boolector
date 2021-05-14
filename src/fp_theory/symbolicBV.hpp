@@ -35,7 +35,7 @@ class symbolicBV
     auto btor = btor_manager::get ();
     assert (btor);
     auto srt = boolector_bitvec_sort (btor, bw);
-    auto one = boolector_zero (btor, srt);
+    auto one = boolector_one (btor, srt);
     return symbolicBV<isSigned> (one);
   }
 

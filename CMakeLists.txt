@@ -12,6 +12,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/deps/install")
 
+set(DEPS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/deps)
+
 #-----------------------------------------------------------------------------#
 
 include(CheckCCompilerFlag)
