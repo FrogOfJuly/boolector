@@ -29,8 +29,6 @@ class traits
   typedef symfpu::unpackedFloat<traits> uf;
 
   static symbolicRoundingMode RNE (void) { return symbolicRoundingMode (1); }
-
-  // Could be better...
   static symbolicRoundingMode RNA (void) { return symbolicRoundingMode (2); }
   static symbolicRoundingMode RTP (void) { return symbolicRoundingMode (4); }
 
