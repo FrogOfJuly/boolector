@@ -48,7 +48,7 @@ class symbolicBV
     assert (boolector_is_bitvec_sort (btor, srt));
     btor_node  = node;
     auto width = boolector_get_width (btor, btor_node);
-    LOG (DEBUG) << "costructed SymbolicBV with width " << width;
+    LOG (DEBUG) << "constructed SymbolicBV with width " << width;
   }
   symbolicBV (const symbolicBV<isSigned>& old)
   {
