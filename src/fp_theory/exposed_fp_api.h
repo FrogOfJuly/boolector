@@ -9,6 +9,10 @@
 
 /*--some floating point logic--*/
 namespace fp {
+BoolectorNode* boolector_fp_zero(Btor* btor,
+                                 const typename fp::traits::fpt& fp_info
+                                  );
+
 BoolectorNode* boolector_fp_var (Btor* btor,
                                  const typename fp::traits::fpt& fp_info,
                                  const char* symbol);
@@ -80,7 +84,7 @@ BoolectorNode* boolector_fp_eq_smtlib (Btor* btor,
                          BoolectorNode* left,
                          BoolectorNode* right);
 
-BoolectorNode* boolector_get_fne_rounding_mod (Btor* btor);
+BoolectorNode* boolector_get_rne_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtp_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtn_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rna_rounding_mod (Btor* btor);
