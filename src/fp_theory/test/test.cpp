@@ -15,7 +15,7 @@ main (int argc, char* argv[])
   c.setToDefault ();
 
   el::Loggers::addFlag (el::LoggingFlag::HierarchicalLogging);
-  el::Loggers::setLoggingLevel (el::Level::Warning);
+  el::Loggers::setLoggingLevel (el::Level::Info);
 
   c.setGlobally (el::ConfigurationType::Format, "--------- | %level | %msg");
   c.setGlobally (el::ConfigurationType::ToFile, "false");
@@ -25,7 +25,7 @@ main (int argc, char* argv[])
   fp::traits::bwt e = 8;
   fp::traits::bwt s = 24;
   auto fmt          = fp::traits::fpt (e, s);
-  auto tests = fp::test_cases (fmt, fp::test_cases::rounding_mode::RNA);
+  auto tests = fp::test_cases (fmt, fp::test_cases::rounding_mode::RNA, false);
 
   tests.run ();
 
