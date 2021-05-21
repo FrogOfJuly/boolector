@@ -6,7 +6,7 @@
 
 #include <cfenv>
 
-#include "../deps/symfpu/core/unpackedFloat.h"
+#include "symfpu/core/unpackedFloat.h"
 #include "fp_info.h"
 #include "symbolicBV.hpp"
 #include "symbolicProp.h"
