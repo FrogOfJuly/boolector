@@ -4,18 +4,18 @@
 
 #include "exposed_fp_api.h"
 
-#include "../../../deps/easyloggingpp/src/easylogging++.h"
-#include "../deps/symfpu/core/add.h"
-#include "../deps/symfpu/core/classify.h"
-#include "../deps/symfpu/core/compare.h"
-#include "../deps/symfpu/core/divide.h"
-#include "../deps/symfpu/core/fma.h"
-#include "../deps/symfpu/core/multiply.h"
-#include "../deps/symfpu/core/packing.h"
-#include "../deps/symfpu/core/remainder.h"
-#include "../deps/symfpu/core/sign.h"
-#include "../deps/symfpu/core/sqrt.h"
-#include "../deps/symfpu/core/unpackedFloat.h"
+
+#include "symfpu/core/add.h"
+#include "symfpu/core/classify.h"
+#include "symfpu/core/compare.h"
+#include "symfpu/core/divide.h"
+#include "symfpu/core/fma.h"
+#include "symfpu/core/multiply.h"
+#include "symfpu/core/packing.h"
+#include "symfpu/core/remainder.h"
+#include "symfpu/core/sign.h"
+#include "symfpu/core/sqrt.h"
+#include "symfpu/core/unpackedFloat.h"
 #include "boolector.h"
 #include "fp_ite.h"
 #include "traits.h"
@@ -336,5 +336,16 @@ boolector_fp_zero (Btor* btor, const traits::fpt& fp_info)
   fp::btor_manager::unset ();
   return bv.get_node ();
 }
+
+BoolectorNode*
+boolector_fp_one (Btor* btor, const traits::fpt& fp_info)
+{
+fp::btor_manager::set (btor);
+auto bw = fp_info.significandWidth () + fp_info.exponentWidth ();
+auto bv = fp::traits::ubv ::one (bw);
+fp::btor_manager::unset ();
+return bv.get_node ();
+}
+
 }  // namespace fp
    /*--some floating point logic--*/

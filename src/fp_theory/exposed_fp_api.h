@@ -9,9 +9,8 @@
 
 /*--some floating point logic--*/
 namespace fp {
-BoolectorNode* boolector_fp_zero(Btor* btor,
-                                 const typename fp::traits::fpt& fp_info
-                                  );
+BoolectorNode* boolector_fp_zero (Btor* btor,
+                                  const typename fp::traits::fpt& fp_info);
 
 BoolectorNode* boolector_fp_var (Btor* btor,
                                  const typename fp::traits::fpt& fp_info,
@@ -75,20 +74,22 @@ BoolectorNode* boolector_fp_lte (Btor* btor,
                                  BoolectorNode* right);
 
 BoolectorNode* boolector_fp_eq_ieee754 (Btor* btor,
-                                const typename fp::traits::fpt& fp_info,
-                                BoolectorNode* left,
-                                BoolectorNode* right);
+                                        const typename fp::traits::fpt& fp_info,
+                                        BoolectorNode* left,
+                                        BoolectorNode* right);
 
 BoolectorNode* boolector_fp_eq_smtlib (Btor* btor,
-                         const traits::fpt& fp_info,
-                         BoolectorNode* left,
-                         BoolectorNode* right);
+                                       const traits::fpt& fp_info,
+                                       BoolectorNode* left,
+                                       BoolectorNode* right);
 
 BoolectorNode* boolector_get_rne_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtp_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtn_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rna_rounding_mod (Btor* btor);
 BoolectorNode* boolector_get_rtz_rounding_mod (Btor* btor);
+
+BoolectorNode* boolector_fp_one (Btor* btor, const traits::fpt& fp_info);
 
 }  // namespace fp
 /*--some floating point logic--*/
