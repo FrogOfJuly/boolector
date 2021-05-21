@@ -27,7 +27,7 @@ fp::test_cases::cmp_to_zero () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 void
@@ -46,7 +46,7 @@ fp::test_cases::cmp_two_symb_vars () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 
@@ -70,7 +70,7 @@ fp::test_cases::addition_commutation_with_zero () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 
@@ -94,7 +94,7 @@ fp::test_cases::addition_commutation () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 
@@ -138,7 +138,9 @@ fp::test_cases::run () const
   addition_commutation_with_zero ();
   addition_commutation ();
   distribution_relative_to_addition ();
-  trivial_unsat_test();
+  trivial_unsat_test ();
+  less_trivial_unsat_test ();
+  multiplication_by_one();
 }
 void
 fp::test_cases::right_zero_neutrality () const
@@ -158,7 +160,7 @@ fp::test_cases::right_zero_neutrality () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 
@@ -180,7 +182,7 @@ fp::test_cases::left_zero_neutrality () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 void
@@ -200,7 +202,7 @@ fp::test_cases::adding_zeroes () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 
@@ -221,7 +223,7 @@ fp::test_cases::substracting_zeros () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 void
@@ -241,7 +243,7 @@ fp::test_cases::multiplying_zeros () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 void
@@ -258,7 +260,7 @@ fp::test_cases::distribution_relative_to_addition () const
   auto xz        = fp::boolector_fp_mult (btor, fmt, rmode, x, z);
   auto right_add = fp::boolector_fp_add (btor, fmt, rmode, xy, xz);
   auto cond      = fp::boolector_fp_eq_smtlib (btor, fmt, left_mul, right_add);
-  auto not_cond = boolector_not(btor, cond);
+  auto not_cond  = boolector_not (btor, cond);
 
   boolector_assert (btor, not_cond);
   auto result = boolector_sat (btor);
@@ -267,7 +269,7 @@ fp::test_cases::distribution_relative_to_addition () const
   result == BOOLECTOR_SAT
       ? LOG (INFO) << "SAT"
       : LOG (INFO) << "expected sat, got: "
-                      << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }
 void
@@ -288,6 +290,49 @@ fp::test_cases::trivial_unsat_test () const
   result == BOOLECTOR_UNSAT
       ? LOG (INFO) << "UNSAT"
       : LOG (INFO) << "expected unsat, got: "
-                      << (result == BOOLECTOR_SAT ? "sat" : "unknown");
+                   << (result == BOOLECTOR_SAT ? "sat" : "unknown");
+  release_boolector ();
+}
+void
+fp::test_cases::less_trivial_unsat_test () const
+{
+  LOG (INFO) << "running x < 1 && x > 1 test";
+  set_boolector ();
+  auto x                = fp::boolector_fp_var (btor, fmt, "x");
+  auto one              = fp::boolector_fp_one (btor, fmt);
+  auto less_then_one    = fp::boolector_fp_lt (btor, fmt, x, one);
+  auto greater_then_one = fp::boolector_fp_gt (btor, fmt, x, one);
+  auto cond             = boolector_and (btor, less_then_one, greater_then_one);
+
+  boolector_assert (btor, cond);
+  auto result = boolector_sat (btor);
+
+  LOG (INFO) << "Expect: unsat";
+  result == BOOLECTOR_UNSAT
+      ? LOG (INFO) << "UNSAT"
+      : LOG (INFO) << "expected unsat, got: "
+                   << (result == BOOLECTOR_SAT ? "sat" : "unknown");
+  release_boolector ();
+}
+void
+fp::test_cases::multiplication_by_one () const
+{
+  LOG (INFO) << "running x * 1 != x test";
+  set_boolector ();
+
+  auto x        = fp::boolector_fp_var (btor, fmt, "x");
+  auto one      = fp::boolector_fp_one (btor, fmt);
+  auto ox       = fp::boolector_fp_mult (btor, fmt, rmode, x, one);
+  auto cond     = fp::boolector_fp_eq_smtlib (btor, fmt, ox, x);
+  auto not_cond = boolector_not (btor, cond);
+
+  boolector_assert (btor, not_cond);
+  auto result = boolector_sat (btor);
+
+  LOG (INFO) << "Expect: sat";
+  result == BOOLECTOR_SAT
+      ? LOG (INFO) << "SAT"
+      : LOG (INFO) << "expected sat, got: "
+                   << (result == BOOLECTOR_UNSAT ? "unsat" : "unknown");
   release_boolector ();
 }

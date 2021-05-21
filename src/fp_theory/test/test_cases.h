@@ -37,14 +37,16 @@ class test_cases
   void cmp_to_zero () const;
   void cmp_two_symb_vars () const;
   void addition_commutation_with_zero () const;
-  void adding_zeroes() const;
-  void substracting_zeros() const;
-  void multiplying_zeros() const;
+  void adding_zeroes () const;
+  void substracting_zeros () const;
+  void multiplying_zeros () const;
   void addition_commutation () const;
   void right_zero_neutrality () const;
   void left_zero_neutrality () const;
   void distribution_relative_to_addition () const;
-  void trivial_unsat_test()const;
+  void trivial_unsat_test () const;
+  void less_trivial_unsat_test () const;
+  void multiplication_by_one () const;
 
  public:
   explicit test_cases (const fp::traits::fpt& fmt,
