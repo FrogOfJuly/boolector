@@ -397,19 +397,19 @@ class symbolicBV
     return symbolicBV<isSigned> (
         boolector_concat (btor, btor_node, right.btor_node));
   }
-  symbolicBV<isSigned> extend (bitWidthType newSize) const
+  symbolicBV<isSigned> extend (bitWidthType extension) const
   {
     LOG (DEBUG) << "extending from size" << getWidth () << " to size "
-                << newSize;
+                << getWidth () + extension;
     auto btor = btor_manager::get ();
     assert (btor);
     if constexpr (isSigned)
     {
-      return symbolicBV<isSigned> (boolector_sext (btor, btor_node, newSize));
+      return symbolicBV<isSigned> (boolector_sext (btor, btor_node, extension));
     }
     else
     {
-      return symbolicBV<isSigned> (boolector_uext (btor, btor_node, newSize));
+      return symbolicBV<isSigned> (boolector_uext (btor, btor_node, extension));
     }
   }
   symbolicBV<isSigned> resize (fp::bitWidthType newSize) const
@@ -431,13 +431,16 @@ class symbolicBV
       return *this;
     }
   }
-  symbolicBV<isSigned> contract (fp::bitWidthType newSize) const
+  symbolicBV<isSigned> contract (fp::bitWidthType reduction) const
   {
-    LOG (DEBUG) << "contructing from size" << getWidth ()  << " to size "
+    auto newSize = (this->getWidth () - 1) - reduction;
+    LOG (DEBUG) << "contracting from size" << getWidth () << " to size "
                 << newSize;
+
     auto btor = btor_manager::get ();
     assert (btor);
-    return symbolicBV<isSigned> (boolector_slice (btor, btor_node, newSize, 0));
+    return symbolicBV<isSigned> (boolector_slice (
+        btor, btor_node, newSize, 0));
   }
 
   symbolicBV<isSigned> modularLeftShift (const symbolicBV<isSigned>& op) const
